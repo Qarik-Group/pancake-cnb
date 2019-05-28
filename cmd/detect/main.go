@@ -33,7 +33,7 @@ func runDetect(context detect.Detect) (int, error) {
 	return context.Pass(buildplan.BuildPlan{
 		pancake.Dependency: buildplan.Dependency{
 			Version: "0.2.3",
-			Metadata: buildplan.Metadata{"launch": false},
+			Metadata: buildplan.Metadata{"build": true, "launch": false},
 		},
 	})
 }

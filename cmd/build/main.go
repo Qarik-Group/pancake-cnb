@@ -22,7 +22,6 @@ func main() {
 	}
 
 	os.Exit(code)
-
 }
 
 func runBuild(context build.Build) (int, error) {

@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	bpDir, phpURI, pancakeURI string
+	bpDir, phpURI, httpdURI, pancakeURI string
 )
 
 func TestIntegration(t *testing.T) {
@@ -26,6 +26,7 @@ func TestIntegration(t *testing.T) {
 	defer os.RemoveAll(pancakeURI)
 
 	phpURI, err = dagger.GetLatestBuildpack("php-cnb")
+	httpdURI, err = dagger.GetLatestBuildpack("httpd-cnb")
 	Expect(err).ToNot(HaveOccurred())
 	defer os.RemoveAll(phpURI)
 
@@ -39,7 +40,8 @@ func testIntegration(t *testing.T, when spec.G, it spec.S) {
 	})
 
 	it("should build a working OCI image for a simple app", func() {
-		app, err := dagger.PackBuild(filepath.Join("fixtures", "phpapp"), phpURI, pancakeURI)
+		// app, err := dagger.PackBuild(filepath.Join("fixtures", "phpapp"), pancakeURI, phpURI, httpdURI)
+		app, err := dagger.PackBuild(filepath.Join("fixtures", "simple_app"), pancakeURI, httpdURI)
 		Expect(err).ToNot(HaveOccurred())
 		defer app.Destroy()
 
