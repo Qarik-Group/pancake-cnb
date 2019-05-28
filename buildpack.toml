@@ -10,3 +10,11 @@ pre_package = "./scripts/build.sh"
 
 [[stacks]]
 id = "org.cloudfoundry.stacks.cflinuxfs3"
+
+[[metadata.dependencies]]
+id = "cf-pancake"
+name = "Pancake"
+sha256 = "6e22ea039732dfff455a7ad635b5f6bb293f8b11237c812b7eed24e9474ccecb"
+stacks = ["org.cloudfoundry.stacks.cflinuxfs3"]
+uri = "https://github.com/cloudfoundry-community/cf-pancake/releases/download/v0.2.3/cf-pancake-linux-amd64.tar.xz"
+version = "0.2.3"

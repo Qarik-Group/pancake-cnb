@@ -8,6 +8,7 @@ if [[ ! -d integration ]]; then
     exit 0
 fi
 
+: ${GIT_TOKEN:?required}
 PACK_VERSION=${PACK_VERSION:-""}
 source scripts/install_tools.sh "$PACK_VERSION"
 
@@ -18,10 +19,6 @@ export CNB_RUN_IMAGE=${CNB_RUN_IMAGE:-cloudfoundry/cnb-run:cflinuxfs3}
 # Most helpful for local testing consistency with CI (which would already pull the latest)
 docker pull "$CNB_BUILD_IMAGE"
 docker pull "$CNB_RUN_IMAGE"
-
-# Get GIT_TOKEN for github rate limiting
-GIT_TOKEN=${GIT_TOKEN:-"$(lpass show Shared-CF\ Buildpacks/concourse-private.yml | grep buildpacks-github-token | cut -d ' ' -f 2)"}
-export GIT_TOKEN
 
 echo "Run Buildpack Runtime Integration Tests"
 set +e

@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	bpDir, goURI, goModURI string
+	bpDir, phpURI, pancakeURI string
 )
 
 func TestIntegration(t *testing.T) {
@@ -21,13 +21,13 @@ func TestIntegration(t *testing.T) {
 	Expect := NewWithT(t).Expect
 	bpDir, err = dagger.FindBPRoot()
 	Expect(err).NotTo(HaveOccurred())
-	goModURI, err = dagger.PackageBuildpack(bpDir)
+	pancakeURI, err = dagger.PackageBuildpack(bpDir)
 	Expect(err).ToNot(HaveOccurred())
-	defer os.RemoveAll(goModURI)
+	defer os.RemoveAll(pancakeURI)
 
-	goURI, err = dagger.GetLatestBuildpack("go-cnb")
+	phpURI, err = dagger.GetLatestBuildpack("php-cnb")
 	Expect(err).ToNot(HaveOccurred())
-	defer os.RemoveAll(goURI)
+	defer os.RemoveAll(phpURI)
 
 	spec.Run(t, "Integration", testIntegration, spec.Report(report.Terminal{}))
 }
@@ -38,63 +38,44 @@ func testIntegration(t *testing.T, when spec.G, it spec.S) {
 		Expect = NewWithT(t).Expect
 	})
 
-	const (
-		goFinding = "go: finding github.com/"
-		goDownloading = "go: downloading github.com/"
-		goExtracting = "go: extracting github.com/"
-	)
-
 	it("should build a working OCI image for a simple app", func() {
-		app, err := dagger.PackBuild(filepath.Join("testdata", "simple_app"), goURI, goModURI)
+		app, err := dagger.PackBuild(filepath.Join("fixtures", "phpapp"), phpURI, pancakeURI)
 		Expect(err).ToNot(HaveOccurred())
 		defer app.Destroy()
 
 		Expect(app.Start()).To(Succeed())
-
-		_, _, err = app.HTTPGet("/")
-		Expect(err).NotTo(HaveOccurred())
+		Expect(app.HTTPGetBody("/")).To(ContainSubstring("PHP Version"))
 	})
 
-	when("the app is pushed twice", func() {
-		it("does not reinstall go modules", func() {
-			appDir := filepath.Join("testdata", "simple_app")
-			app, err := dagger.PackBuild(appDir, goURI, goModURI)
-			Expect(err).ToNot(HaveOccurred())
-			defer app.Destroy()
+	// when("the app is pushed twice", func() {
+	// 	it("does not reinstall go modules", func() {
+	// 		app, err := dagger.PackBuild(filepath.Join("fixtures", "phpapp"), phpURI, pancakeURI)
+	// 		Expect(err).ToNot(HaveOccurred())
+	// 		defer app.Destroy()
 
-			Expect(app.BuildLogs()).To(MatchRegexp(goFinding))
-			Expect(app.BuildLogs()).To(MatchRegexp(goDownloading))
-			Expect(app.BuildLogs()).To(MatchRegexp(goExtracting))
+	// 		Expect(app.Start()).To(Succeed())
+	// 		Expect(app.HTTPGetBody("/")).To(ContainSubstring("PHP Version"))
 
-			_, imageID, _, err := app.Info()
-			Expect(err).NotTo(HaveOccurred())
+	// 		_, imageID, _, err := app.Info()
+	// 		Expect(err).NotTo(HaveOccurred())
 
-			app, err = dagger.PackBuildNamedImage(imageID, appDir, goURI, goModURI)
-			Expect(err).ToNot(HaveOccurred())
+	// 		app, err = dagger.PackBuildNamedImage(imageID, appDir, phpURI, pancakeURI)
+	// 		Expect(err).ToNot(HaveOccurred())
 
-			repeatBuildLogs := app.BuildLogs()
-			Expect(repeatBuildLogs).NotTo(MatchRegexp(goFinding))
-			Expect(repeatBuildLogs).NotTo(MatchRegexp(goDownloading))
-			Expect(repeatBuildLogs).NotTo(MatchRegexp(goExtracting))
+	// 		Expect(app.Start()).To(Succeed())
+	// 		Expect(app.HTTPGetBody("/")).To(ContainSubstring("PHP Version"))
+	// 	})
+	// })
 
-			Expect(app.Start()).To(Succeed())
+	// when("the app is vendored", func() {
+	// 	it("builds an OCI image without downloading any extra packages", func() {
+	// 		app, err := dagger.PackBuild(filepath.Join("fixtures", "phpapp"), phpURI, pancakeURI)
+	// 		Expect(err).ToNot(HaveOccurred())
 
-			_, _, err = app.HTTPGet("/")
-			Expect(err).NotTo(HaveOccurred())
-		})
-	})
+	// 		// Expect(app.BuildLogs()).NotTo(MatchRegexp(goDownloading))
 
-	when("the app is vendored", func() {
-		it("builds an OCI image without downloading any extra packages", func() {
-			appDir := filepath.Join("testdata", "vendored")
-			app, err := dagger.PackBuild(appDir, goURI, goModURI)
-			Expect(err).ToNot(HaveOccurred())
-
-			Expect(app.BuildLogs()).NotTo(MatchRegexp(goDownloading))
-
-			Expect(app.Start()).To(Succeed())
-			_, _, err = app.HTTPGet("/")
-			Expect(err).ToNot(HaveOccurred())
-		})
-	})
+	// 		Expect(app.Start()).To(Succeed())
+	// 		Expect(app.HTTPGetBody("/")).To(ContainSubstring("PHP Version"))
+	// 	})
+	// })
 }

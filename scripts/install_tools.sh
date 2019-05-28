@@ -45,11 +45,9 @@ install_pack() {
         exit 1
     fi
 
-    # don't fail out if lpass is not found
-    set -e
-    set +u
-    (GIT_TOKEN=${GIT_TOKEN:-"$(lpass show Shared-CF\ Buildpacks/concourse-private.yml | grep buildpacks-github-token | cut -d ' ' -f 2)"}) || true
-    set +e
+    # Allow GIT_TOKEN for github rate limiting
+    GIT_TOKEN=${GIT_TOKEN:-}
+    export GIT_TOKEN
 
     CURL_DATA=""
     if [[ ! -z "$GIT_TOKEN" ]]; then
