@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-PACK_VERSION=latest
 usage() {
     echo "Usage:   install_tools.sh <version: optional>"
     echo "Example: install_tools.sh 0.0.9"
@@ -16,10 +15,7 @@ if [[ "$#" -eq 1 && $1 == "-h"  ]]; then
     usage
 fi
 
-if [ "$#" -eq 1  ]; then
-    PACK_VERSION="$1"
-fi
-
+PACK_VERSION=${1:-latest}
 
 install_pack_master() {
     if [[ -f ".bin/pack" ]]; then return 0; fi

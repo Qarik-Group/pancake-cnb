@@ -41,10 +41,6 @@ func NewContributor(context build.Build) (c Contributor, willContribute bool, er
 		httpdLayer:  context.Layers.DependencyLayer(dep),
 	}
 
-	if _, ok := plan.Metadata["launch"]; ok {
-		contributor.launchContribution = true
-	}
-
 	return contributor, true, nil
 }
 

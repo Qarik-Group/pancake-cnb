@@ -39,7 +39,7 @@ func testIntegration(t *testing.T, when spec.G, it spec.S) {
 	})
 
 	it("should build a working OCI image for a simple app", func() {
-		app, err := dagger.PackBuild(filepath.Join("fixtures", "phpapp"), pancakeURI, phpURI)
+		app, err := dagger.PackBuild(filepath.Join("fixtures", "phpapp"), phpURI, pancakeURI)
 		Expect(err).ToNot(HaveOccurred())
 		defer app.Destroy()
 
