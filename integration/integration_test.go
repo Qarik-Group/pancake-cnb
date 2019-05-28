@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	bpDir, phpURI, httpdURI, pancakeURI string
+	bpDir, phpBP, phpWebBP, httpdBP, pancakeBP string
 )
 
 func TestIntegration(t *testing.T) {
@@ -21,14 +21,17 @@ func TestIntegration(t *testing.T) {
 	Expect := NewWithT(t).Expect
 	bpDir, err = dagger.FindBPRoot()
 	Expect(err).NotTo(HaveOccurred())
-	pancakeURI, err = dagger.PackageBuildpack(bpDir)
+	pancakeBP, err = dagger.PackageBuildpack(bpDir)
 	Expect(err).ToNot(HaveOccurred())
-	defer os.RemoveAll(pancakeURI)
+	defer os.RemoveAll(pancakeBP)
 
-	phpURI, err = dagger.GetLatestBuildpack("php-cnb")
-	httpdURI, err = dagger.GetLatestBuildpack("httpd-cnb")
+	phpBP, err = dagger.GetLatestBuildpack("php-cnb")
+	phpWebBP, err = dagger.GetLatestBuildpack("php-web-cnb")
+	httpdBP, err = dagger.GetLatestBuildpack("httpd-cnb")
 	Expect(err).ToNot(HaveOccurred())
-	defer os.RemoveAll(phpURI)
+	defer os.RemoveAll(phpBP)
+	defer os.RemoveAll(phpWebBP)
+	defer os.RemoveAll(httpdBP)
 
 	spec.Run(t, "Integration", testIntegration, spec.Report(report.Terminal{}))
 }
@@ -40,8 +43,8 @@ func testIntegration(t *testing.T, when spec.G, it spec.S) {
 	})
 
 	it("should build a working OCI image for a simple app", func() {
-		// app, err := dagger.PackBuild(filepath.Join("fixtures", "phpapp"), pancakeURI, phpURI, httpdURI)
-		app, err := dagger.PackBuild(filepath.Join("fixtures", "simple_app"), pancakeURI, httpdURI)
+		app, err := dagger.PackBuild(filepath.Join("fixtures", "phpapp"), pancakeBP, phpBP, httpdBP, phpWebBP)
+		// app, err := dagger.PackBuild(filepath.Join("fixtures", "simple_app"), pancakeURI, httpdURI)
 		Expect(err).ToNot(HaveOccurred())
 		defer app.Destroy()
 
