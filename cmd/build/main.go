@@ -5,50 +5,39 @@ import (
 	"os"
 
 	"github.com/buildpack/libbuildpack/buildplan"
-
-	"github.com/starkandwayne/cf-pancake-cnb/utils"
-
-	"github.com/starkandwayne/cf-pancake-cnb/mod"
-
 	"github.com/cloudfoundry/libcfbuildpack/build"
+	"github.com/starkandwayne/cf-pancake-cnb/pancake"
 )
 
-type GoModContributor interface {
-	Contribute() error
-	Cleanup() error
-}
-
 func main() {
-	context, err := build.DefaultBuild()
+	buildContext, err := build.DefaultBuild()
 	if err != nil {
-		_, _ = fmt.Fprintf(os.Stderr, "failed to create a default build context: %s", err)
+		_, _ = fmt.Fprintf(os.Stderr, "failed to build: %s", err)
 		os.Exit(101)
 	}
 
-	runner := utils.Command{}
-	var goModContributor GoModContributor = mod.NewContributor(context, runner)
-	code, err := runBuild(context, goModContributor)
+	code, err := runBuild(buildContext)
 	if err != nil {
-		context.Logger.Info(err.Error())
+		buildContext.Logger.Info(err.Error())
 	}
 
 	os.Exit(code)
+
 }
 
-func runBuild(context build.Build, goModContributor GoModContributor) (int, error) {
+func runBuild(context build.Build) (int, error) {
 	context.Logger.FirstLine(context.Logger.PrettyIdentity(context.Buildpack))
 
-	_, wantDependency := context.BuildPlan[mod.Dependency]
-	if !wantDependency {
-		return context.Failure(102), nil
+	contributor, willContribute, err := pancake.NewContributor(context)
+	if err != nil {
+		return context.Failure(102), err
 	}
 
-	if err := goModContributor.Contribute(); err != nil {
-		return context.Failure(103), err
-	}
-
-	if err := goModContributor.Cleanup(); err != nil {
-		return context.Failure(104), err
+	if willContribute {
+		err := contributor.Contribute()
+		if err != nil {
+			return context.Failure(103), err
+		}
 	}
 
 	return context.Success(buildplan.BuildPlan{})
