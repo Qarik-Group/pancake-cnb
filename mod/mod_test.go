@@ -17,7 +17,7 @@ import (
 	"github.com/golang/mock/gomock"
 	. "github.com/onsi/gomega"
 
-	"github.com/cloudfoundry/go-mod-cnb/mod"
+	"github.com/starkandwayne/cf-pancake-cnb/mod"
 	"github.com/sclevine/spec"
 	"github.com/sclevine/spec/report"
 )

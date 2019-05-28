@@ -1,8 +1,8 @@
 
 [buildpack]
-id = "org.cloudfoundry.go-mod"
-name = "Go Mod Buildpack"
-version = "0.0.2"
+id = "com.starkandwayne.cf-pancake"
+name = "CF Pancake Buildpack"
+version = "0.3.0"
 
 [metadata]
 include_files = ["bin/build","bin/detect","buildpack.toml"]

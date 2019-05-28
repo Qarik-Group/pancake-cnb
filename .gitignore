@@ -2,5 +2,5 @@
 .idea
 .bin
 *.tgz
-go-mod-cnb_*
+cf-pancake-cnb_*
 bin/

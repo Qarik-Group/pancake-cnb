@@ -9,7 +9,7 @@ import (
 
 	"github.com/cloudfoundry/libcfbuildpack/helper"
 
-	"github.com/cloudfoundry/go-mod-cnb/mod"
+	"github.com/starkandwayne/cf-pancake-cnb/mod"
 
 	"github.com/buildpack/libbuildpack/buildplan"
 	"github.com/cloudfoundry/libcfbuildpack/detect"

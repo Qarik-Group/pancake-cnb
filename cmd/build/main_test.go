@@ -6,7 +6,7 @@ import (
 	"github.com/golang/mock/gomock"
 
 	"github.com/buildpack/libbuildpack/buildplan"
-	"github.com/cloudfoundry/go-mod-cnb/mod"
+	"github.com/starkandwayne/cf-pancake-cnb/mod"
 
 	"github.com/cloudfoundry/libcfbuildpack/build"
 	"github.com/cloudfoundry/libcfbuildpack/test"

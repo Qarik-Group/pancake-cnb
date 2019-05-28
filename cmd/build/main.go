@@ -6,9 +6,9 @@ import (
 
 	"github.com/buildpack/libbuildpack/buildplan"
 
-	"github.com/cloudfoundry/go-mod-cnb/utils"
+	"github.com/starkandwayne/cf-pancake-cnb/utils"
 
-	"github.com/cloudfoundry/go-mod-cnb/mod"
+	"github.com/starkandwayne/cf-pancake-cnb/mod"
 
 	"github.com/cloudfoundry/libcfbuildpack/build"
 )
