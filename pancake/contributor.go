@@ -46,7 +46,7 @@ func NewContributor(context build.Build) (c Contributor, willContribute bool, er
 func (c Contributor) Contribute() error {
 	return c.layer.Contribute(func(artifact string, layer layers.DependencyLayer) error {
 		layer.Logger.SubsequentLine("Installing to %s", layer.Root)
-		return helper.CopyFile(artifact, layer.Root)
+		return helper.ExtractTarXz(artifact, layer.Root, 0)
 	}, c.flags()...)
 }
 
