@@ -47,6 +47,7 @@ func testIntegration(t *testing.T, when spec.G, it spec.S) {
 		app, err := dagger.PackBuild(filepath.Join("fixtures", "phpapp"), pancakeBP, phpBP, httpdBP, phpWebBP)
 		vcapServices, err := ioutil.ReadFile(filepath.Join("fixtures", "vcap_services", "p-mysql.json"))
 		Expect(err).ToNot(HaveOccurred())
+		app.Env["VCAP_APPLICATION"] = "{}"
 		app.Env["VCAP_SERVICES"] = string(vcapServices)
 		Expect(err).ToNot(HaveOccurred())
 		// TODO: restore app.Destroy when no longer debugging
@@ -55,7 +56,7 @@ func testIntegration(t *testing.T, when spec.G, it spec.S) {
 		Expect(app.Start()).To(Succeed())
 		Expect(app.HTTPGetBody("/")).To(ContainSubstring("PHP Version"))
 		Expect(app.HTTPGetBody("/")).To(ContainSubstring("MYSQL_HOSTNAME"))
-		Expect(app.HTTPGetBody("/")).To(ContainSubstring("P_MYSQL_PORT"))
+		Expect(app.HTTPGetBody("/")).To(ContainSubstring("P_MYSQL_PASSWORD"))
 	})
 
 	// when("the app is pushed twice", func() {
