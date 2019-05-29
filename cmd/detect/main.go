@@ -31,8 +31,6 @@ func main() {
 
 func runDetect(context detect.Detect) (int, error) {
 	return context.Pass(buildplan.BuildPlan{
-		pancake.Dependency: buildplan.Dependency{
-			Version: "0.2.3",
-		},
+		pancake.Dependency: buildplan.Dependency{},
 	})
 }

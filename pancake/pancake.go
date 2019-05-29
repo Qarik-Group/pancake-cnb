@@ -18,7 +18,7 @@ type Contributor struct {
 
 // NewContributor will create a new Contributor object
 func NewContributor(context build.Build) (c Contributor, willContribute bool, err error) {
-	plan, wantLayer := context.BuildPlan[Dependency]
+	_, wantLayer := context.BuildPlan[Dependency]
 	if !wantLayer {
 		return Contributor{}, false, nil
 	}
@@ -28,11 +28,9 @@ func NewContributor(context build.Build) (c Contributor, willContribute bool, er
 		return Contributor{}, false, err
 	}
 
-	version := plan.Version
-	if version == "" {
-		if version, err = context.Buildpack.DefaultVersion(Dependency); err != nil {
-			return Contributor{}, false, err
-		}
+	version, err := context.Buildpack.DefaultVersion(Dependency)
+	if err != nil {
+		return Contributor{}, false, err
 	}
 
 	dep, err := deps.Best(Dependency, version, context.Stack)
@@ -47,8 +45,7 @@ func NewContributor(context build.Build) (c Contributor, willContribute bool, er
 	return contributor, true, nil
 }
 
-
-// Contribute will install cf-pancake, create profile.d
+// Contribute will install cf-pancake, create profile.d to run "cf-pancake"
 func (c Contributor) Contribute() error {
 	return c.layer.Contribute(func(artifact string, layer layers.DependencyLayer) error {
 		layer.Logger.SubsequentLine("Installing to %s", layer.Root)
@@ -61,13 +58,15 @@ func (c Contributor) Contribute() error {
 			return err
 		}
 
-		err = os.MkdirAll(filepath.Join(layer.Root, "bin"), 0755)
-		if err != nil {
+		if err := os.MkdirAll(filepath.Join(layer.Root, "bin"), 0755); err != nil {
 			return err
 		}
 
-		err = os.Rename(pancakeBin[0], filepath.Join(layer.Root, "bin", "cf-pancake"))
-		if err != nil {
+		if err := layer.AppendPathSharedEnv("PATH", filepath.Join(layer.Root, "bin")); err != nil {
+			return err
+		}
+
+		if err := os.Rename(pancakeBin[0], filepath.Join(layer.Root, "bin", "cf-pancake")); err != nil {
 			return err
 		}
 
@@ -85,6 +84,6 @@ func (c Contributor) flags() []layers.Flag {
 func runCFPancakeOnStart() string {
 	return `#!/bin/bash
 
-eval "$(/layers/com.starkandwayne.cf-pancake/cf-pancake/bin/cf-pancake exports)"
+eval "$(cf-pancake exports)"
 `
 }
