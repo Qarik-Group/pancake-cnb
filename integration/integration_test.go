@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -44,12 +45,17 @@ func testIntegration(t *testing.T, when spec.G, it spec.S) {
 
 	it("should build a working OCI image for a simple app", func() {
 		app, err := dagger.PackBuild(filepath.Join("fixtures", "phpapp"), pancakeBP, phpBP, httpdBP, phpWebBP)
-		// app, err := dagger.PackBuild(filepath.Join("fixtures", "simple_app"), pancakeURI, httpdURI)
+		vcapServices, err := ioutil.ReadFile(filepath.Join("fixtures", "vcap_services", "p-mysql.json"))
 		Expect(err).ToNot(HaveOccurred())
-		defer app.Destroy()
+		app.Env["VCAP_SERVICES"] = string(vcapServices)
+		Expect(err).ToNot(HaveOccurred())
+		// TODO: restore app.Destroy when no longer debugging
+		// defer app.Destroy()
 
 		Expect(app.Start()).To(Succeed())
 		Expect(app.HTTPGetBody("/")).To(ContainSubstring("PHP Version"))
+		Expect(app.HTTPGetBody("/")).To(ContainSubstring("MYSQL_HOSTNAME"))
+		Expect(app.HTTPGetBody("/")).To(ContainSubstring("P_MYSQL_PORT"))
 	})
 
 	// when("the app is pushed twice", func() {
