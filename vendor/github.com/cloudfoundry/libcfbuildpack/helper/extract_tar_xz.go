@@ -14,24 +14,26 @@
  * limitations under the License.
  */
 
-package test
+package helper
 
 import (
-	"io/ioutil"
 	"os"
-	"path/filepath"
-	"testing"
+
+	"github.com/xi2/xz"
 )
 
-// TouchFile writes a zero-length file during testing.
-func TouchFile(t *testing.T, elem ...string) {
-	filename := filepath.Join(elem...)
+// ExtractTarXz extracts source XZ TAR file to a destination directory.
+func ExtractTarXz(source string, destination string, stripComponents int) error {
+	f, err := os.Open(source)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
 
-	if err := os.MkdirAll(filepath.Dir(filename), 0755); err != nil {
-		t.Fatal(err)
+	r, err := xz.NewReader(f, 0)
+	if err != nil {
+		return err
 	}
 
-	if err := ioutil.WriteFile(filename, []byte{}, 0644); err != nil {
-		t.Fatal(err)
-	}
+	return handleTar(r, destination, stripComponents)
 }
