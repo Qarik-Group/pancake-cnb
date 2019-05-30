@@ -30,3 +30,11 @@ docker run -d \
 ```
 
 The sample PHP app, showing env vars, is now running at http://localhost:8080.
+
+To see the generated env vars within the running Docker container we need to run `/lifecycle/launcher bash` after entering the container:
+
+```plain
+$ docker ps
+$ docker exec -ti <name or id> bash
+# /lifecycle/launcher bash
+```
