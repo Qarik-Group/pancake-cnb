@@ -2,7 +2,7 @@
 [buildpack]
 id = "com.starkandwayne.cf-pancake"
 name = "CF Pancake Buildpack"
-version = "0.3.0"
+version = "0.4.0"
 
 [metadata]
 include_files = ["bin/build","bin/detect","buildpack.toml"]
@@ -14,7 +14,7 @@ id = "org.cloudfoundry.stacks.cflinuxfs3"
 [[metadata.dependencies]]
 id = "cf-pancake"
 name = "Pancake"
-sha256 = "6e22ea039732dfff455a7ad635b5f6bb293f8b11237c812b7eed24e9474ccecb"
+sha256 = "e0dd35b6eaf1bc8bf2e93325c08aed9546b2b13763591eae612738f05de8e7df"
 stacks = ["org.cloudfoundry.stacks.cflinuxfs3"]
-uri = "https://github.com/cloudfoundry-community/cf-pancake/releases/download/v0.2.3/cf-pancake-linux-amd64.tar.xz"
-version = "0.2.3"
+uri = "https://github.com/starkandwayne/cf-pancake/releases/download/v1.0.0/cf-pancake-linux-amd64.tar.xz"
+version = "1.0.0"
